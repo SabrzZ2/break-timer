@@ -109,7 +109,7 @@ public class KiwiDrawingCounter implements ActionListener   {
                              });
 
 
-        JLabel label = new JLabel("Timer: ");
+       // JLabel label = new JLabel("Timer: ");
 
         // JPanel and its dimensions set. Add the button to the window.
 
