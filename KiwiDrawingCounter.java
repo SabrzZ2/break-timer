@@ -308,6 +308,9 @@ public static void main (String[] args) {
             PlaySound(filepath);
             // Show a window saying the timer is done.
             JOptionPane.showMessageDialog(frame, "You're done!");
+            minutesPassed = 0;
+            hoursPassed = 0;
+            secondsPassed = 0;
 
 
             return null;
