@@ -230,7 +230,7 @@ public class KiwiDrawingCounter extends JFrame implements ActionListener   {
         // Make sure its visible...
         frame.setVisible(true);
         // Window icon in the top left.
-        ImageIcon icon = new ImageIcon("PEAKTIME.png");
+        ImageIcon icon = new ImageIcon("img/PEAKTIME.png");
         frame.setIconImage(icon.getImage());
 
 
