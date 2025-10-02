@@ -10,36 +10,52 @@ import java.io.File;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.text.DecimalFormat;
 
 
+public class KiwiDrawingCounter extends JFrame implements ActionListener   {
 
-public class KiwiDrawingCounter implements ActionListener   {
+    // A bunch of swing BUUUULLLLSSSHIIIITTT i have to add.
+    static JFrame frame = new JFrame("frameWindow");
 
-    static JFrame frame = new JFrame();
-
-    JTextField field = new JTextField(5);
-    JTextField filepathField = new JTextField(5);
+    JTextField field = new JTextField(3);
+    JTextField filepathField = new JTextField(3);
 
     JButton button = new JButton("Click to start timer.");
     JButton stop = new JButton("Stop");
 
-    JLabel label = new JLabel();
+    JLabel timeLabel = new JLabel("Enter break time below in minutes: ");
+    JLabel filepathLabel = new JLabel("Sound File path (Make sure the file is in the folder.)");
 
+    // Decimal format for the time remaining.
+    static DecimalFormat decFormat = new DecimalFormat("00");
+        // Hi variables! WHY ARE ALL OF YOU STATIC?!?!?!?!?!?
      static int timeSaved;
 
      static int minutestoMilliseconds = 60000;
 
      static boolean stopPlease;
 
-     static String filepath = "wake up.wav";
+     static String filepath = "";
 
-     public static void PlaySound(String location) {
+     // static String location;
+
+     static long secondsPassed;
+
+     static long minutesPassed;
+
+     static long hoursPassed;
+
+    static JLabel timeElapsedLabel = new JLabel("Time Elapsed: " + decFormat.format(hoursPassed) + ":" + decFormat.format(minutesPassed) + ":" + decFormat.format(secondsPassed));
+
+
+    public static void PlaySound(String location) {
 
          // Music file addition. This method is only to play the sound.
 
          try {
-
              File musicPath = new File(location);
+
 
              if (musicPath.exists()) {
 
@@ -72,7 +88,7 @@ public class KiwiDrawingCounter implements ActionListener   {
                 stopPlease = true;
             }
         });
-
+        // I fucking hate how messy this looks.
         field.addKeyListener(new KeyListener() {
 
                                  @Override
@@ -112,6 +128,9 @@ public class KiwiDrawingCounter implements ActionListener   {
 
                                  } // Unused.
                              });
+
+
+        // File path field action listener, when you click enter.
         filepathField.addKeyListener(new KeyListener() {
 
             @Override
@@ -122,13 +141,29 @@ public class KiwiDrawingCounter implements ActionListener   {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
+                // If the key entered is the enter key, do the if statement.
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    // If the Enter key is pressed on the text field, then grab the text and put it in the string.
+
                     filepath = filepathField.getText();
-                    System.out.println("File path: " + filepath);
+
+                    String location = filepath;
+
+                    File musicPath = new File(location);
+
+                    // If the file exists at all, then continue. If not, then show an error panel.
+
+                    if (musicPath.exists()) {
+                        // If the Enter key is pressed on the text field, then grab the text and put it in the string.
+                        System.out.println("File path: " + filepath);
+                        JOptionPane.showMessageDialog(frame, "Saved!");
+
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Can't see the file honey, make sure it is formatted like '[name].wav], and that the file is in the folder.");
+                    }
+
 
                 }
-
             }
 
             @Override
@@ -139,26 +174,49 @@ public class KiwiDrawingCounter implements ActionListener   {
         });
 
 
-       // JLabel label = new JLabel("Timer: ");
 
         // JPanel and its dimensions set. Add the button, field, and stop to window.
+        // Don't ask me to explain this.
 
         JPanel panel = new JPanel();
-        // Sets panel size.
-        panel.setPreferredSize(new Dimension(500, 500));
-        // Sets the panel border.
+        panel.setBounds(0, 0, 350, 150);
         panel.setBorder(BorderFactory.createBevelBorder(1));
-        // Panel layout (the buttons, fields, etc.)
-        panel.setLayout(new GridLayout(5, 3));
-        // Adds all the additional stuff like buttons.
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBounds(300, 250, 100, 100);
+        buttonPanel.setBorder(BorderFactory.createBevelBorder(1));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
+
+
+
+
+        // Adds all the additional stuff like buttons. Don't ask me to explain this either.
+
+        panel.add(timeLabel);
         panel.add(field);
-        panel.add(button);
-        panel.add(stop);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(filepathLabel);
         panel.add(filepathField);
+        panel.add(timeElapsedLabel);
+        buttonPanel.add(button);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 40)));
+        buttonPanel.add(stop);
+        button.setMaximumSize(new Dimension(180, 50));
+        stop.setMaximumSize(new Dimension(180, 50));
+        field.setMaximumSize(new Dimension(350, 50));
+        filepathField.setMaximumSize(new Dimension(350, 50));
+        stop.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        button.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filepathField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+
 
         // The frame around the window.
 
-        frame.add(panel, BorderLayout.CENTER);
+        frame.add(panel);
+        frame.add(buttonPanel);
         // Sets the default close operation.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // The title of the window.
@@ -167,9 +225,13 @@ public class KiwiDrawingCounter implements ActionListener   {
         frame.pack();
         // Sets the location to the center.
         frame.setLocationRelativeTo(null);
+        // Frame size
+        frame.setSize(550, 220);
         // Make sure its visible...
         frame.setVisible(true);
-
+        // Window icon in the top left.
+        ImageIcon icon = new ImageIcon("PEAKTIME.png");
+        frame.setIconImage(icon.getImage());
 
 
 
@@ -203,12 +265,22 @@ public static void main (String[] args) {
 
         @Override
         protected Object doInBackground() throws Exception {
+            // Constant variables for the time conversions.
+            final int millisecondstoSeconds = 1000;
+            final int millisecondstoMinutes = 60000;
+            final int millisecondstoHours = 3600000;
             long systemTime = System.currentTimeMillis();
             long maxSeconds = systemTime + ((long) minutestoMilliseconds * timeSaved);
+
 
             do {
                 // systemTime is just to measure the current time on the computer.
                 systemTime = System.currentTimeMillis();
+                // Time calculations
+                secondsPassed = ((maxSeconds - systemTime) / millisecondstoSeconds) % 60;
+                minutesPassed = ((maxSeconds - systemTime) / millisecondstoMinutes) % 60;
+                hoursPassed = ((maxSeconds - systemTime) / millisecondstoHours) % 24;
+                calculate();
                 // Console log to debug if the loop is actually working.
                 System.out.println("Pass.");
                 // If the stopPlease variable is true from the stop button action, then break the loop and make the variable false.
@@ -240,6 +312,11 @@ public static void main (String[] args) {
 
             return null;
         }
+    }
+
+    // A little tiny method JUST FOR THE PRECIOUS little time remaining label.
+    public static void calculate() {
+        timeElapsedLabel.setText("Time Elapsed: " + decFormat.format(hoursPassed) + ":" + decFormat.format(minutesPassed) + ":" + decFormat.format(secondsPassed));
     }
 
 
