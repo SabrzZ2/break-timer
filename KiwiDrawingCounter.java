@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
+import java.io.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -19,7 +19,8 @@ public class KiwiDrawingCounter extends JFrame implements ActionListener   {
     static JFrame frame = new JFrame("frameWindow");
 
     JTextField field = new JTextField(3);
-    JTextField filepathField = new JTextField(3);
+    static JTextField filepathField = new JTextField(3);
+
 
     JButton button = new JButton("Click to start timer.");
     JButton stop = new JButton("Stop");
@@ -48,6 +49,9 @@ public class KiwiDrawingCounter extends JFrame implements ActionListener   {
 
     static JLabel timeElapsedLabel = new JLabel("Time Elapsed: " + decFormat.format(hoursPassed) + ":" + decFormat.format(minutesPassed) + ":" + decFormat.format(secondsPassed));
 
+    static String soundPath = "soundpath.txt";
+
+    static File soundpathFile = new File("soundpath.txt");
 
     public static void PlaySound(String location) {
 
@@ -147,6 +151,17 @@ public class KiwiDrawingCounter extends JFrame implements ActionListener   {
 
                     filepath = filepathField.getText();
 
+                    try (FileWriter writer = new FileWriter(soundPath)) {
+                        writer.write(filepathField.getText());
+                        System.out.println("File has been written!");
+                    }
+                    catch (FileNotFoundException fileSTUCK) {
+                        System.out.println("Could not locate the file location.");
+                    }
+                    catch(IOException couldntWrite) {
+                        System.out.println("Could not write sound text file.");
+                    }
+
                     String location = filepath;
 
                     File musicPath = new File(location);
@@ -238,8 +253,43 @@ public class KiwiDrawingCounter extends JFrame implements ActionListener   {
     }
 
 public static void main (String[] args) {
-
     new KiwiDrawingCounter();
+
+    // Write a new soundpath file.
+    if (soundpathFile.exists()) {
+        System.out.println("File already exists.");
+    }
+    else {
+
+        try (FileWriter writer = new FileWriter(soundPath)) {
+            writer.write("");
+            System.out.println("File has been written!");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not locate the file location.");
+        } catch (IOException e) {
+            System.out.println("Could not write sound text file.");
+        }
+    }
+
+    // Read the file for any lines to put into the filepath for sound.
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(soundPath))) {
+
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            filepath = line;
+            filepathField.setText(filepath);
+        }
+    }
+
+    catch(FileNotFoundException e ) {
+        System.out.println("Could not locate the file.");
+    }
+    catch (IOException e) {
+        System.out.println("Something went wrong, idfk what it is.");
+    }
 // Unused for now.
 
 
@@ -307,10 +357,11 @@ public static void main (String[] args) {
             // PLay the sound method. Planning to make this changable.
             PlaySound(filepath);
             // Show a window saying the timer is done.
-            JOptionPane.showMessageDialog(frame, "You're done!");
+            int answer = JOptionPane.showOptionDialog(frame, "You're done!", "Finished!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
             minutesPassed = 0;
             hoursPassed = 0;
             secondsPassed = 0;
+
 
 
             return null;
